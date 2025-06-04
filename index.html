@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+
+<style>
+/*   
+
+v2.5 MGSR world ranked course tracker
+by graveyard420woo - twitch.tv/graveyard420woo
+open-source
+
+*/
+body {
+    background: none;
+	font-family: 'Outfit', sans-serif;
+}
+
+.clock {
+padding: 0 0 4px;
+margin: 4px auto;
+font-size: 1.3rem;
+margin-left: 14px;
+}
+.clock1 {
+padding: 0 0 4px;
+margin: 4px auto;
+font-size: 1rem;
+}
+.lineone {
+	display: inline-block;
+}
+.linetwo {
+	display: inline-block;
+}
+.linethree {
+	display: inline-block;
+}
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.listholderbg{
+	background-color: rgba(51, 0, 102, 0.4);
+	background-image: linear-gradient(319deg, rgba(51, 0, 102, 0.4) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(36, 36, 36, 0.4) 100%);
+	border-radius: 14px;
+	box-shadow: 2px 2px 14px rgba(0,0,0,0.45);
+	opacity: 1;
+	border: solid 1px rgba(51, 0, 102, 0.4);
+}
+
+.todo-cmp {
+	background: none;
+	color: #FFFFFF;
+	padding: 10px 20px;
+	border-radius: 5px;
+	width: 230px;
+	opacity: 1;
+}
+	&__header {
+		text-align: center;
+		padding: 5px 0;
+		border-bottom: 1px solid #ddd;	
+	}
+		h2 {
+			font-weight: 600;
+			font-size: 1.3rem;
+			margin: 5px auto;
+			padding: 0;
+			opacity: 1;
+			letter-spacing: 1.2px;
+		}
+		p {
+			padding: 0 0 5px;
+			margin: 4px auto;
+			opacity: 1;
+		}
+		
+	&__list {
+		list-style: none;
+		padding: 0;
+		
+		li {
+			padding: 10px 0 10px;
+			margin: 0;
+			text-align: left;
+			width: 100%;
+			
+			
+			label {
+				cursor: pointer;
+				width: 100%;
+				display: block;
+				
+				
+				input {
+					float: right;
+					opacity: 0;
+				}
+			}
+				span {
+					position: relative;
+					display:block;
+					opacity: 1;
+				}
+</style>
+<title>mgsr course hack</title>
+</head>
+<body>
+<div class="center">
+<div class="listholderbg">
+		<section class="todo-cmp">
+			<header class="todo-cmp__header">
+				<h2 style="margin-left: 5px;">MGSR World Ranked</h2>
+				<span class="clock1" style="margin-left: 6px; margin-top: -8px;">Upcoming course in 
+			
+<span id="MyClockDisplay" class="clock" onload="showTime()"></span></span>
+
+</header>
+<ul class="todo-cmp__list" style="margin-left: -18px; margin-top: 8px; font-size: 1.08rem;">
+					<li>
+						<label for="todo-01">
+							<span>Now: <span id="CurrentCourseDisplay" class="lineone"></span></span>
+						</label>
+					</li>
+					<li>
+						<label for="todo-02">
+							<span>Next: <span id="UpcomingCourseDisplay" class="linetwo"></span></span>
+						</label>
+					</li>
+						<li>
+						<label for="todo-03">
+							<span>Later: <span id="LaterCourseDisplay" class="linethree"></span></span>
+						</label>
+					</li>
+			</ul>
+		</section>
+        </div>
+  </div>
+<script>
+
+var courseCount = 0;
+var courseLock = 0;
+
+function courseSet(){
+	courseCount = getCurrentValue(knownValue, knownTimeUTC);
+	console.log("Current Value:", courseCount);
+}
+
+function getCurrentValue(knownValue, knownTimeUTC) {
+  // Use UTC timestamps for both knownTimeUTC and currentTime
+  const currentTimeUTC = Date.now(); 
+  const timeDifference = currentTimeUTC - knownTimeUTC; 
+  const intervalDuration = 30 * 60 * 1000; // 30 minutes in milliseconds
+  const numberOfIntervals = Math.floor(timeDifference / intervalDuration); 
+
+  // Calculate the current value using the modulo operator for the repeating sequence
+  const currentValue = (knownValue - 1 + numberOfIntervals) % 22 + 1;
+
+  return currentValue;
+}
+
+// Example usage:
+const knownValue = 1; 
+// Replace with the UTC timestamp of your known time point (e.g., from an ISO 8601 string)
+const knownTimeUTC = new Date('2025-06-04T04:00:00Z').getTime(); 
+
+const currentValue = getCurrentValue(knownValue, knownTimeUTC);
+console.log("Current Value:", currentValue);
+
+function showTime(){
+    var date = new Date();
+    var h = date.getHours(); // 0 - 23
+    var m = date.getMinutes(); // 0 - 59
+    var s = date.getSeconds(); // 0 - 59
+    var session = "AM";
+	
+    if(h == 0){
+        h = 12;
+    }
+    
+    if(h > 12){
+        h = h - 12;
+        session = "PM";
+    }
+	
+	if (m == 30){
+		if(courseLock == 0){
+			courseCount = courseCount + 1;
+			courseLock = 1;
+		}
+	}
+	if (m == 31){
+		courseLock = 0;
+		}
+	if (m == 0){
+		if(courseLock == 0){
+			courseCount = courseCount + 1;
+			courseLock = 1;
+		}
+	}
+	if (m == 1){
+		courseLock = 0;
+	}
+	if (courseCount >= 23){
+		courseCount = 1;
+	}
+	
+	if(m < 30){
+        m = 29 - m;
+    } 
+	if (m >= 30){
+		m = 59 - m;
+	}
+	
+	s = 59 - s;
+    
+    h = (h < 10) ? "0" + h : h;
+    m = (m < 10) ? "0" + m : m;
+    s = (s < 10) ? "0" + s : s;
+    
+    var time = m + ":" + s;
+    document.getElementById("MyClockDisplay").innerText = time;
+    document.getElementById("MyClockDisplay").textContent = time;
+	
+    if(courseCount == 1){
+	document.getElementById("CurrentCourseDisplay").innerText = "Bowser Highlands";
+	document.getElementById("CurrentCourseDisplay").textContent = "Bowser Highlands";
+	document.getElementById("UpcomingCourseDisplay").innerText = "AmaDonk";
+	document.getElementById("UpcomingCourseDisplay").textContent = "AmaDonk";
+	document.getElementById("LaterCourseDisplay").innerText = "Blustery Basin";
+	document.getElementById("LaterCourseDisplay").textContent = "Blustery Basin";
+
+	}
+	if(courseCount == 2){
+	document.getElementById("CurrentCourseDisplay").innerText = "AmaDonk";
+	document.getElementById("CurrentCourseDisplay").textContent = "AmaDonk";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Blustery Basin";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Blustery Basin";
+	document.getElementById("LaterCourseDisplay").innerText = "Spiky Palms";
+	document.getElementById("LaterCourseDisplay").textContent = "Spiky Palms";
+	}
+	if(courseCount == 3){
+	document.getElementById("CurrentCourseDisplay").innerText = "Blustery Basin";
+	document.getElementById("CurrentCourseDisplay").textContent = "Blustery Basin";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Spiky Palms";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Spiky Palms";
+	document.getElementById("LaterCourseDisplay").innerText = "AmaShell";
+	document.getElementById("LaterCourseDisplay").textContent = "AmaShell";
+	}
+	if(courseCount == 4){
+	document.getElementById("CurrentCourseDisplay").innerText = "Spiky Palms";
+	document.getElementById("CurrentCourseDisplay").textContent = "Spiky Palms";
+	document.getElementById("UpcomingCourseDisplay").innerText = "AmaShell";
+	document.getElementById("UpcomingCourseDisplay").textContent = "AmaShell";
+	document.getElementById("LaterCourseDisplay").innerText = "All Star Summit";
+	document.getElementById("LaterCourseDisplay").textContent = "All Star Summit";
+	}
+	if(courseCount == 5){
+	document.getElementById("CurrentCourseDisplay").innerText = "AmaShell";
+	document.getElementById("CurrentCourseDisplay").textContent = "AmaShell";
+	document.getElementById("UpcomingCourseDisplay").innerText = "All Star Summit";
+	document.getElementById("UpcomingCourseDisplay").textContent = "All Star Summit";
+	document.getElementById("LaterCourseDisplay").innerText = "Rookie Course";
+	document.getElementById("LaterCourseDisplay").textContent = "Rookie Course";
+	}
+	if(courseCount == 6){
+	document.getElementById("CurrentCourseDisplay").innerText = "All Star Summit";
+	document.getElementById("CurrentCourseDisplay").textContent = "All Star Summit";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Rookie Course";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Rookie Course";
+	document.getElementById("LaterCourseDisplay").innerText = "Bonny Greens";
+	document.getElementById("LaterCourseDisplay").textContent = "Bonny Greens";
+	}
+	if(courseCount == 7){
+	document.getElementById("CurrentCourseDisplay").innerText = "Rookie Course";
+	document.getElementById("CurrentCourseDisplay").textContent = "Rookie Course";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Bonny Greens";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Bonny Greens";
+	document.getElementById("LaterCourseDisplay").innerText = "Ridgerock Lake";
+	document.getElementById("LaterCourseDisplay").textContent = "Ridgerock Lake";
+	}
+	if(courseCount == 8){
+	document.getElementById("CurrentCourseDisplay").innerText = "Bonny Greens";
+	document.getElementById("CurrentCourseDisplay").textContent = "Bonny Greens";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Ridgerock Lake";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Ridgerock Lake";
+	document.getElementById("LaterCourseDisplay").innerText = "Balmy Dunes";
+	document.getElementById("LaterCourseDisplay").textContent = "Balmy Dunes";
+	}
+	if(courseCount == 9){
+	document.getElementById("CurrentCourseDisplay").innerText = "Ridgerock Lake";
+	document.getElementById("CurrentCourseDisplay").textContent = "Ridgerock Lake";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Balmy Dunes";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Balmy Dunes";
+	document.getElementById("LaterCourseDisplay").innerText = "Wildweather Woods";
+	document.getElementById("LaterCourseDisplay").textContent = "Wildweather Woods";
+	}
+	if(courseCount == 10){
+	document.getElementById("CurrentCourseDisplay").innerText = "Balmy Dunes";
+	document.getElementById("CurrentCourseDisplay").textContent = "Balmy Dunes";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Wildweather Woods";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Wildweather Woods";
+	document.getElementById("LaterCourseDisplay").innerText = "Bowser Highlands";
+	document.getElementById("LaterCourseDisplay").textContent = "Bowser Highlands";
+	}
+	if(courseCount == 11){
+	document.getElementById("CurrentCourseDisplay").innerText = "Wildweather Woods";
+	document.getElementById("CurrentCourseDisplay").textContent = "Wildweather Woods";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Bowser Highlands";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Bowser Highlands";
+	document.getElementById("LaterCourseDisplay").innerText = "ProDonk";
+	document.getElementById("LaterCourseDisplay").textContent = "ProDonk";
+	}
+	if(courseCount == 12){
+	document.getElementById("CurrentCourseDisplay").innerText = "Bowser Highlands";
+	document.getElementById("CurrentCourseDisplay").textContent = "Bowser Highlands";
+	document.getElementById("UpcomingCourseDisplay").innerText = "ProDonk";
+	document.getElementById("UpcomingCourseDisplay").textContent = "ProDonk";
+	document.getElementById("LaterCourseDisplay").innerText = "Blustery Basin";
+	document.getElementById("LaterCourseDisplay").textContent = "Blustery Basin";
+	}
+	if(courseCount == 13){
+	document.getElementById("CurrentCourseDisplay").innerText = "ProDonk";
+	document.getElementById("CurrentCourseDisplay").textContent = "ProDonk";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Blustery Basin";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Blustery Basin";
+	document.getElementById("LaterCourseDisplay").innerText = "Spiky Palms";
+	document.getElementById("LaterCourseDisplay").textContent = "Spiky Palms";
+	}
+	if(courseCount == 14){
+	document.getElementById("CurrentCourseDisplay").innerText = "Blustery Basin";
+	document.getElementById("CurrentCourseDisplay").textContent = "Blustery Basin";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Spiky Palms";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Spiky Palms";
+	document.getElementById("LaterCourseDisplay").innerText = "ProShell";
+	document.getElementById("LaterCourseDisplay").textContent = "ProShell";
+	}
+	if(courseCount == 15){
+	document.getElementById("CurrentCourseDisplay").innerText = "Spiky Palms";
+	document.getElementById("CurrentCourseDisplay").textContent = "Spiky Palms";
+	document.getElementById("UpcomingCourseDisplay").innerText = "ProShell";
+	document.getElementById("UpcomingCourseDisplay").textContent = "ProShell";
+	document.getElementById("LaterCourseDisplay").innerText = "All Star Summit";
+	document.getElementById("LaterCourseDisplay").textContent = "All Star Summit";
+	}
+	if(courseCount == 16){
+	document.getElementById("CurrentCourseDisplay").innerText = "ProShell";
+	document.getElementById("CurrentCourseDisplay").textContent = "ProShell";
+	document.getElementById("UpcomingCourseDisplay").innerText = "All Star Summit";
+	document.getElementById("UpcomingCourseDisplay").textContent = "All Star Summit";
+	document.getElementById("LaterCourseDisplay").innerText = "Rookie Course";
+	document.getElementById("LaterCourseDisplay").textContent = "Rookie Course";
+	}
+	if(courseCount == 17){
+	document.getElementById("CurrentCourseDisplay").innerText = "All Star Summit";
+	document.getElementById("CurrentCourseDisplay").textContent = "All Star Summit";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Rookie Course";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Rookie Course";
+	document.getElementById("LaterCourseDisplay").innerText = "Bonny Greens";
+	document.getElementById("LaterCourseDisplay").textContent = "Bonny Greens";
+	}
+	if(courseCount == 18){
+	document.getElementById("CurrentCourseDisplay").innerText = "Rookie Course";
+	document.getElementById("CurrentCourseDisplay").textContent = "Rookie Course";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Bonny Greens";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Bonny Greens";
+	document.getElementById("LaterCourseDisplay").innerText = "Ridgerock Lake";
+	document.getElementById("LaterCourseDisplay").textContent = "Ridgerock Lake";
+	}
+    if(courseCount == 19){
+	document.getElementById("CurrentCourseDisplay").innerText = "Bonny Greens";
+	document.getElementById("CurrentCourseDisplay").textContent = "Bonny Greens";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Ridgerock Lake";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Ridgerock Lake";
+	document.getElementById("LaterCourseDisplay").innerText = "Balmy Dunes";
+	document.getElementById("LaterCourseDisplay").textContent = "Balmy Dunes";
+	}
+	if(courseCount == 20){
+	document.getElementById("CurrentCourseDisplay").innerText = "Ridgerock Lake";
+	document.getElementById("CurrentCourseDisplay").textContent = "Ridgerock Lake";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Balmy Dunes";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Balmy Dunes";
+	document.getElementById("LaterCourseDisplay").innerText = "Wildweather Woods";
+	document.getElementById("LaterCourseDisplay").textContent = "Wildweather Woods";
+	}
+	if(courseCount == 21){
+	document.getElementById("CurrentCourseDisplay").innerText = "Balmy Dunes";
+	document.getElementById("CurrentCourseDisplay").textContent = "Balmy Dunes";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Wildweather Woods";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Wildweather Woods";
+	document.getElementById("LaterCourseDisplay").innerText = "Bowser Highlands";
+	document.getElementById("LaterCourseDisplay").textContent = "Bowser Highlands";
+	}
+	if(courseCount == 22){
+	document.getElementById("CurrentCourseDisplay").innerText = "Wildweather Woods";
+	document.getElementById("CurrentCourseDisplay").textContent = "Wildweather Woods";
+	document.getElementById("UpcomingCourseDisplay").innerText = "Bowser Highlands";
+	document.getElementById("UpcomingCourseDisplay").textContent = "Bowser Highlands";
+	document.getElementById("LaterCourseDisplay").innerText = "AmaDonk";
+	document.getElementById("LaterCourseDisplay").textContent = "AmaDonk";
+	}
+	
+    setTimeout(showTime, 1000);
+    
+}
+courseSet();
+showTime();
+
+</script>
+</body>
+</html>
